@@ -783,5 +783,5 @@ Message:
         return jsonify(success=False, message=f"Failed to send message. Error: {str(e)}")
 
 # ------------------ MAIN ------------------
-if __name__ == '__main__':
+if __name__ == '__main_ _':
     app.run(host='0.0.0.0', port=5000, debug=True)
