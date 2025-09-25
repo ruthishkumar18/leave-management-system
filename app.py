@@ -10,16 +10,21 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import request, jsonify
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = "hackathon_secret"
 
 DB = "hackathon.db"
 
+# Load .env file
+load_dotenv()
+
 # ---------- Twilio configuration ----------
-TWILIO_ACCOUNT_SID = "AC0b89c94063045013aca9a9844fa2a75c"
-TWILIO_AUTH_TOKEN = "017f9da8f29e958ad41aa42a6a6edb8e"
-TWILIO_PHONE_NUMBER = "+170321545611"
+TWILIO_SID = os.getenv("TWILIO_SID")
+TWILIO_AUTH = os.getenv("TWILIO_AUTH")
+TWILIO_PHONE = os.getenv("TWILIO_PHONE")
 
 # ---------- DATABASE INITIALIZATION ----------
 def init_db():
