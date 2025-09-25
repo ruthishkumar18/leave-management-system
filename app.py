@@ -22,9 +22,9 @@ DB = "hackathon.db"
 load_dotenv()
 
 # ---------- Twilio configuration ----------
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER") 
+TWILIO_ACCOUNT_SID = "AC0b89c94063045013aca9a9844fa2a75c"
+TWILIO_AUTH_TOKEN = "017f9da8f29e958ad41aa42a6a6edb8e"
+TWILIO_PHONE_NUMBER = "+17032154561"
 
 # ---------- DATABASE INITIALIZATION ----------
 def init_db():
@@ -738,8 +738,8 @@ def logout():
 ADMIN_EMAIL = "ruthishkumarg@gmail.com"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")    # ← Replace with sender email
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")      # ← Replace with App Password (NOT account password)
+EMAIL_USER = "ruthishkumar.2353045@srec.ac.in"     # ← Replace with sender email
+EMAIL_PASS = "lpbf sydp asdl whus"        # ← Replace with App Password (NOT account password)
 
 @app.route("/message", methods=["GET"])
 def message():
