@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SREC - Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css    " rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="    https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css    " rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #003366;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      --off-white: #f8f9fa;
+      --text-dark: #343a40;
+      --card-bg: #fff;
+      --shadow-light: rgba(0, 0, 0, 0.05);
+      --shadow-medium: rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--off-white);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(90deg, var(--primary-color), #1a2a5a);
+      box-shadow: 0 4px 10px rgba(0, 51, 102, 0.2);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      color: white !important;
+      font-size: 1.5rem;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      border: none;
+      border-radius: 1rem;
+      background-color: var(--card-bg);
+      box-shadow: 0 8px 25px var(--shadow-light);
+      margin-bottom: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px var(--shadow-medium);
+    }
+
+    .card-body h4 {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .table-responsive {
+      max-width: 100%;
+      overflow-x: auto;
+      border-radius: 0.75rem;
+    }
+
+    table {
+      margin-bottom: 0;
+      border-radius: 0.75rem;
+    }
+
+    .table thead th {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: #455a74;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .table-bordered {
+      border-color: #dee2e6;
+    }
+
+    .table-bordered th, .table-bordered td {
+      border-color: #dee2e6;
+      padding: 0.75rem 1rem;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .status-badge {
+      padding: 0.4em 0.8em;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.85em;
+      display: inline-block;
+    }
+
+    .status-pending { background-color: var(--warning-color); color: var(--text-dark); }
+    .status-approved { background-color: var(--success-color); color: white; }
+    .status-rejected { background-color: var(--danger-color); color: white; }
+
+    footer {
+      background: linear-gradient(90deg, var(--primary-color), #1a2a5a);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 -4px 6px var(--shadow-light);
+      margin-top: auto;
+    }
+
+    /* NEW: Chart Container Styles */
+    .chart-container {
+      height: 320px;
+      position: relative;
+      margin: 1.5rem auto;
+      max-width: 900px;
+    }
+
+    .chart-card {
+      margin-bottom: 2rem;
+    }
+
+    .chart-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    /* User Role Distribution Layout */
+    .role-distribution-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .role-pie-chart {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .role-table {
+      flex: 1;
+      min-width: 300px;
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      background: #fafafa;
+    }
+
+    .role-table th,
+    .role-table td {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .role-table th {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+    }
+
+    .policy-alert {
+      font-size: 0.85rem;
+      color: #d32f2f;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #ffebee;
+      border-left: 4px solid #d32f2f;
+      border-radius: 0.3rem;
+    }
+
+    /* NEW: REAL-TIME FILTER SECTION STYLES */
+    .filter-section {
+      background: #f8f9fa;
+      border-radius: calc(var(--border-radius) - 0.25rem);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .filter-section h5 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-weight: 600;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 0.5rem;
+    }
+
+    .filter-input-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-input-group input,
+    .filter-input-group select {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 0.75rem;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .filter-input-group input:focus,
+    .filter-input-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+    }
+
+    .filter-clear-btn {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      color: #6c757d;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      margin-top: 1rem;
+    }
+
+    .filter-clear-btn:hover {
+      background: #e9ecef;
+      color: #495057;
+    }
+
+    /* Hide filtered-out rows */
+    .table-row-hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .role-distribution-row {
+        flex-direction: column;
+      }
+      .card-body h4 {
+        font-size: 1.25rem;
+      }
+      table thead th, table tbody td {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="fas fa-user-shield me-2"></i> Admin Dashboard
+      </a>
+      <div class="ms-auto">
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-light">
+          <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="container">
+
+      <!-- User Role Distribution -->
+      <section class="card chart-card">
+        <header class="card-header">
+          <h4 class="chart-title">User Role Distribution</h4>
+        </header>
+        <div class="card-body">
+          <div class="role-distribution-row">
+            <!-- Pie Chart -->
+            <div class="role-pie-chart">
+              <canvas id="roleDistributionChart"></canvas>
+            </div>
+            <!-- Table -->
+            <div class="role-table">
+              <table class="table table-sm table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th>Dept</th>
+                    <th>Students</th>
+                    <th>Tutors</th>
+                    <th>ACs</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for dept, stats in dept_role_stats.items() %}
+                    <tr>
+                      <td>{{ dept }}</td>
+                      <td>{{ stats.students }}</td>
+                      <td>{{ stats.tutors }}</td>
+                      <td>{{ stats.acs }}</td>
+                      <td>{{ stats.total }}</td>
+                    </tr>
+                  {% else %}
+                    <tr><td colspan="5" class="text-muted">No user data available.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% if policy_alert %}
+                <div class="policy-alert">
+                  {{ policy_alert }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Department-wise Leave Statistics -->
+      <section class="card chart-card">
+        <header class="card-header">
+          <h4 class="chart-title">Department-wise Leave Statistics</h4>
+        </header>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="deptLeaveChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Institutional Leave Trend -->
+      <section class="card chart-card">
+        <header class="card-header">
+          <h4 class="chart-title">Institutional Leave Trend (Monthly)</h4>
+        </header>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="institutionalTrendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ FILTER 1: Registered Users -->
+      <section class="filter-section">
+        <h5><i class="fas fa-filter me-2"></i>Filter Registered Users</h5>
+        <div class="filter-input-group">
+          <input type="text" id="filter-user-name" placeholder="Search by Name" class="form-control">
+          <input type="text" id="filter-user-roll" placeholder="Search by Roll Number" class="form-control">
+          <input type="text" id="filter-user-dept" placeholder="Search by Department" class="form-control">
+          <input type="text" id="filter-user-role" placeholder="Search by Role" class="form-control">
+        </div>
+        <button class="filter-clear-btn" id="clear-user-filters">Clear Filters</button>
+      </section>
+
+      <!-- Registered Users -->
+      <div class="card">
+        <div class="card-body">
+          <h4 class="mb-3">
+            <i class="fas fa-users me-2"></i> Registered Users
+          </h4>
+          <div class="table-responsive" style="max-height: 400px;">
+            <!-- ✅ Added Roll column and ID -->
+            <table class="table table-bordered table-hover table-striped align-middle" id="registered-users-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Roll</th> <!-- ✅ NEW COLUMN -->
+                  <th>Dept</th>
+                  <th>Email</th>
+                  <th>Password</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for u in users %}
+                <tr>
+                  <td>{{ u.id }}</td>
+                  <td>{{ u.name }}</td>
+                  <td>{{ u.roll }}</td> <!-- ✅ NEW DATA -->
+                  <td>{{ u.dept }}</td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.password }}</td>
+                  <td><span class="badge bg-secondary">{{ u.role }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="6" class="text-muted py-4">No registered users found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ FILTER 2: Leave Applications -->
+      <section class="filter-section">
+        <h5><i class="fas fa-filter me-2"></i>Filter Leave Applications</h5>
+        <div class="filter-input-group">
+          <input type="text" id="filter-leave-name" placeholder="Search by Student Name" class="form-control">
+          <input type="text" id="filter-leave-roll" placeholder="Search by Roll Number" class="form-control">
+          <input type="text" id="filter-leave-dept" placeholder="Search by Department" class="form-control">
+          <input type="text" id="filter-leave-tutor" placeholder="Search by Tutor Name" class="form-control">
+          <input type="date" id="filter-leave-start" placeholder="Start Date" class="form-control">
+          <input type="date" id="filter-leave-end" placeholder="End Date" class="form-control">
+        </div>
+        <button class="filter-clear-btn" id="clear-leave-filters">Clear Filters</button>
+      </section>
+
+      <!-- Leave Applications -->
+      <div class="card">
+        <div class="card-body">
+          <h4 class="mb-3">
+            <i class="fas fa-file-alt me-2"></i> Leave Applications
+          </h4>
+          <div class="table-responsive" style="max-height: 400px;">
+            <!-- ✅ Added ID for JS targeting -->
+            <table class="table table-bordered table-hover table-striped align-middle" id="leave-applications-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Student Name</th>
+                  <th>Roll</th>
+                  <th>Dept</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Reason</th>
+                  <th>Tutor</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for l in leaves %}
+                <tr>
+                  <td>{{ l.id }}</td>
+                  <td>{{ l.student_name }}</td>
+                  <td>{{ l.roll }}</td>
+                  <td>{{ l.dept }}</td>
+                  <td>{{ l.start_date }}</td>
+                  <td>{{ l.end_date }}</td>
+                  <td>{{ l.reason }}</td>
+                  <td>{{ l.tutor }}</td>
+                  <td>
+                    <span class="status-badge 
+                      {% if l.status == 'Pending' %}status-pending
+                      {% elif l.status == 'Approved' %}status-approved
+                      {% else %}status-rejected
+                      {% endif %}">
+                      {{ l.status }}
+                    </span>
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="9" class="text-muted py-4">No leave applications found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <p class="mb-0">&copy; 2025 SREC Leave Management System</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js    "></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js  "></script>
+
+  <script>
+    // --- USER ROLE DISTRIBUTION PIE CHART ---
+    const roleLabels = {{ role_labels | safe }};
+    const roleData = {{ role_counts | safe }};
+
+    const roleConfig = {
+      type: 'pie',
+      data: {
+        labels: roleLabels,
+        datasets: [{
+          data: roleData,
+          backgroundColor: [
+            '#1976D2', // Students
+            '#28a745', // Tutors
+            '#ff9800'  // ACs
+          ],
+          borderColor: [
+            '#1565C0',
+            '#218838',
+            '#e65100'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font: { size: 12 },
+              padding: 12
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label}: ${context.raw}`;
+              }
+            }
+          }
+        },
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        }
+      }
+    };
+
+    const roleCtx = document.getElementById('roleDistributionChart').getContext('2d');
+    new Chart(roleCtx, roleConfig);
+
+    // --- DEPARTMENT-WISE LEAVE STATISTICS BAR CHART ---
+    const deptLabels = {{ dept_labels | safe }};
+    const deptData = {{ dept_leave_counts | safe }};
+
+    const deptConfig = {
+      type: 'bar',
+      data: {
+        labels: deptLabels,
+        datasets: [{
+          label: 'Total Leaves Applied',
+          data: deptData,
+          backgroundColor: '#1976D2',
+          borderColor: '#1565C0',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.raw}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              font: { size: 11 },
+              color: '#555'
+            },
+            grid: {
+              color: 'rgba(0,0,0,0.05)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 11 },
+              color: '#555',
+              maxRotation: 45,
+              minRotation: 0
+            },
+            grid: {
+              display: false
+            }
+          }
+        },
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        }
+      }
+    };
+
+    const deptCtx = document.getElementById('deptLeaveChart').getContext('2d');
+    new Chart(deptCtx, deptConfig);
+
+    // --- INSTITUTIONAL LEAVE TREND LINE CHART ---
+    const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const trendData = {{ monthly_trend | safe }};
+
+    const trendConfig = {
+      type: 'line',
+      data: {
+        labels: monthLabels,
+        datasets: [{
+          label: 'Leaves Applied',
+          data: trendData,
+          borderColor: '#1976D2',
+          backgroundColor: 'rgba(25, 118, 210, 0.1)',
+          borderWidth: 3,
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.raw}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              font: { size: 11 },
+              color: '#555'
+            },
+            grid: {
+              color: 'rgba(0,0,0,0.05)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 11 },
+              color: '#555'
+            },
+            grid: {
+              display: false
+            }
+          }
+        },
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        }
+      }
+    };
+
+    const trendCtx = document.getElementById('institutionalTrendChart').getContext('2d');
+    new Chart(trendCtx, trendConfig);
+
+    // ======================================================
+    // NEW: REAL-TIME FILTER LOGIC — NO CHANGES TO EXISTING CODE
+    // ======================================================
+
+    // ✅ Filter 1: Registered Users
+    document.addEventListener('DOMContentLoaded', () => {
+      const userTableRows = Array.from(document.querySelectorAll('#registered-users-table tbody tr'));
+      const userFilters = {
+        name: document.getElementById('filter-user-name'),
+        roll: document.getElementById('filter-user-roll'),
+        dept: document.getElementById('filter-user-dept'),
+        role: document.getElementById('filter-user-role')
+      };
+      const clearUserBtn = document.getElementById('clear-user-filters');
+
+      function applyUserFilters() {
+        const nameVal = userFilters.name.value.toLowerCase().trim();
+        const rollVal = userFilters.roll.value.toLowerCase().trim();
+        const deptVal = userFilters.dept.value.toLowerCase().trim();
+        const roleVal = userFilters.role.value.toLowerCase().trim();
+
+        userTableRows.forEach(row => {
+          const nameCell = row.cells[1].textContent.toLowerCase();
+          const rollCell = row.cells[2].textContent.toLowerCase();
+          const deptCell = row.cells[3].textContent.toLowerCase();
+          const roleCell = row.cells[5].textContent.toLowerCase();
+
+          const matchesName = !nameVal || nameCell.includes(nameVal);
+          const matchesRoll = !rollVal || rollCell.includes(rollVal);
+          const matchesDept = !deptVal || deptCell.includes(deptVal);
+          const matchesRole = !roleVal || roleCell.includes(roleVal);
+
+          if (matchesName && matchesRoll && matchesDept && matchesRole) {
+            row.classList.remove('table-row-hidden');
+          } else {
+            row.classList.add('table-row-hidden');
+          }
+        });
+      }
+
+      Object.values(userFilters).forEach(input => input.addEventListener('input', applyUserFilters));
+      clearUserBtn.addEventListener('click', () => {
+        Object.values(userFilters).forEach(input => input.value = '');
+        applyUserFilters();
+      });
+      applyUserFilters();
+    });
+
+    // ✅ Filter 2: Leave Applications
+    document.addEventListener('DOMContentLoaded', () => {
+      const leaveTableRows = Array.from(document.querySelectorAll('#leave-applications-table tbody tr'));
+      const leaveFilters = {
+        name: document.getElementById('filter-leave-name'),
+        roll: document.getElementById('filter-leave-roll'),
+        dept: document.getElementById('filter-leave-dept'),
+        tutor: document.getElementById('filter-leave-tutor'),
+        start: document.getElementById('filter-leave-start'),
+        end: document.getElementById('filter-leave-end')
+      };
+      const clearLeaveBtn = document.getElementById('clear-leave-filters');
+
+      function applyLeaveFilters() {
+        const nameVal = leaveFilters.name.value.toLowerCase().trim();
+        const rollVal = leaveFilters.roll.value.toLowerCase().trim();
+        const deptVal = leaveFilters.dept.value.toLowerCase().trim();
+        const tutorVal = leaveFilters.tutor.value.toLowerCase().trim();
+        const startVal = leaveFilters.start.value;
+        const endVal = leaveFilters.end.value;
+
+        leaveTableRows.forEach(row => {
+          const nameCell = row.cells[1].textContent.toLowerCase();
+          const rollCell = row.cells[2].textContent.toLowerCase();
+          const deptCell = row.cells[3].textContent.toLowerCase();
+          const tutorCell = row.cells[7].textContent.toLowerCase();
+          const startCell = row.cells[4].textContent;
+          const endCell = row.cells[5].textContent;
+
+          const matchesName = !nameVal || nameCell.includes(nameVal);
+          const matchesRoll = !rollVal || rollCell.includes(rollVal);
+          const matchesDept = !deptVal || deptCell.includes(deptVal);
+          const matchesTutor = !tutorVal || tutorCell.includes(tutorVal);
+          const matchesStart = !startVal || startCell >= startVal;
+          const matchesEnd = !endVal || endCell <= endVal;
+
+          if (matchesName && matchesRoll && matchesDept && matchesTutor && matchesStart && matchesEnd) {
+            row.classList.remove('table-row-hidden');
+          } else {
+            row.classList.add('table-row-hidden');
+          }
+        });
+      }
+
+      Object.values(leaveFilters).forEach(input => input.addEventListener('input', applyLeaveFilters));
+      clearLeaveBtn.addEventListener('click', () => {
+        Object.values(leaveFilters).forEach(input => input.value = '');
+        applyLeaveFilters();
+      });
+      applyLeaveFilters();
+    });
+  </script>
+</body>
+</html>

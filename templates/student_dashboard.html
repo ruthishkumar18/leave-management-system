@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SREC - Student Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css        " rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="        https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css        " rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #1e3c72;
+      --primary-accent: #2a5298;
+      --success-color: #2ecc71;
+      --danger-color: #e74c3c;
+      --light-gray: #f5f7fa;
+      --dark-text: #2c3e50;
+      --muted-text: #7f8c8d;
+      --card-radius: 1.25rem;
+      --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --hover-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f9fafc 0%, #eef2f7 100%);
+      color: var(--dark-text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(120deg, var(--primary-color), var(--primary-accent));
+      color: white;
+      padding: 1.75rem 1.5rem;
+      box-shadow: 0 4px 15px rgba(30, 60, 114, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+    }
+
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h2 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .notification-bell {
+      position: relative;
+      font-size: 1.6rem;
+      color: white;
+      cursor: pointer;
+    }
+
+    .notification-count {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: var(--danger-color);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      padding: 3px 7px;
+      font-weight: 600;
+    }
+
+    .dropdown-menu {
+      border-radius: 0.75rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 3rem 1rem;
+      max-width: 1140px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .card {
+      border: none;
+      border-radius: var(--card-radius);
+      background: white;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .card:hover {
+      box-shadow: var(--hover-shadow);
+      transform: translateY(-4px);
+    }
+
+    .card-header {
+      background: transparent;
+      border-bottom: 2px solid #f0f0f0;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .card-header h4 {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .welcome-section h4 {
+      font-weight: 700;
+      color: var(--primary-color);
+      font-size: 1.75rem;
+    }
+
+    .action-button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .action-button-group .btn {
+      flex: 1 1 180px;
+      font-weight: 600;
+      border-radius: 0.85rem;
+      padding: 1rem 1.5rem;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: var(--transition);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary-color), var(--primary-accent));
+      border: none;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-accent);
+      box-shadow: 0 8px 22px rgba(30, 60, 114, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(90deg, #e74c3c, #c0392b);
+      border: none;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+      box-shadow: 0 8px 22px rgba(192, 57, 43, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .table thead th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .status-badge {
+      padding: 0.4em 0.9em;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-width: 90px;
+      display: inline-block;
+    }
+
+    .status-pending .status-badge {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .status-approved .status-badge {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-rejected .status-badge {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .qr-code-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 0.75rem;
+      object-fit: contain;
+      border: 1px solid #e0e0e0;
+    }
+
+    .btn-sm {
+      font-weight: 600;
+      border-radius: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-success {
+      background: linear-gradient(90deg, #27ae60, #2ecc71);
+      border: none;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #27ae60;
+      box-shadow: 0 6px 16px rgba(39, 174, 96, 0.5);
+    }
+
+    footer {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-accent));
+      color: white;
+      text-align: center;
+      padding: 1.25rem;
+      margin-top: auto;
+      box-shadow: 0 -4px 15px rgba(30, 60, 114, 0.2);
+    }
+
+    /* Chart container styles */
+    .chart-container {
+      height: 300px;
+      position: relative;
+      margin: 1.5rem auto;
+    }
+
+    .chart-card {
+      margin-bottom: 2rem;
+    }
+
+    /* NEW: Interactive Heatmap Styles */
+    .heatmap-container {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: calc(var(--card-radius) - 0.25rem);
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .heatmap-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+      border-radius: 0.5rem;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .heatmap-cell:hover {
+      transform: scale(1.1);
+      z-index: 10;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .heatmap-cell-tooltip {
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.3rem;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .heatmap-cell:hover .heatmap-cell-tooltip {
+      opacity: 1;
+    }
+
+    /* Dynamic color generation via HSL — base on max value */
+    {% set max_count = day_counts | max | default(1) %}
+    {% for i in range(7) %}
+      {% set count = day_counts[i] | default(0) %}
+      {% set ratio = count / max_count if max_count > 0 else 0 %}
+      {% set hue = 210 %} /* Blue tone */
+      {% set sat = 70 %}   /* Saturation */
+      {% set light = 95 - (ratio * 70) %} /* Lightness: 95% (light) down to 25% (dark) */
+      .heatmap-cell[data-day="{{ i }}"] {
+        background: hsl({{ hue }}, {{ sat }}%, {{ light }}%);
+      }
+    {% endfor %}
+
+    /* Highlight the busiest day */
+    {% set max_index = day_counts.index(day_counts|max) if day_counts|length > 0 and day_counts|max > 0 else -1 %}
+    {% if max_index != -1 %}
+      .heatmap-cell[data-day="{{ max_index }}"] {
+        border: 2px solid var(--primary-color);
+        box-shadow: 0 0 15px rgba(30, 60, 114, 0.4);
+        transform: scale(1.05);
+      }
+    {% endif %}
+
+    .heatmap-labels {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted-text);
+      font-weight: 500;
+    }
+
+    .heatmap-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--dark-text);
+    }
+
+    /* NEW: Scrollable table container */
+    .table-responsive { 
+      max-height: 400px; /* Fixed height for scroll */
+      overflow-y: auto; /* Enable vertical scroll */
+      border: 1px solid #dee2e6;
+      border-radius: 0.75rem;
+    }
+    .table { margin-bottom: 0; }
+    .table thead th {
+      position: sticky; /* Keep header visible while scrolling */
+      top: 0;
+      z-index: 10;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .heatmap-container {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.3rem;
+        padding: 0.8rem;
+      }
+      .heatmap-cell {
+        font-size: 0.7rem;
+      }
+      .heatmap-labels {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header with Notifications -->
+  <header>
+    <div class="container">
+      <h2>SREC - Student Dashboard</h2>
+      <div class="dropdown">
+        <button
+          class="notification-bell btn btn-link p-0"
+          id="notifDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Notifications"
+          type="button"
+        >
+          <i class="fas fa-bell"></i>
+          {% if notifications and notifications|length > 0 %}
+            <span class="notification-count">{{ notifications|length }}</span>
+          {% endif %}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown">
+          {% if notifications and notifications|length > 0 %}
+            {% for notif in notifications %}
+              <li><a class="dropdown-item" href="#">{{ notif['message'] }}<br><small>{{ notif['created_at'] }}</small></a></li>
+            {% endfor %}
+          {% else %}
+            <li><span class="dropdown-item-text text-muted">No new notifications</span></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      <!-- Welcome Card -->
+      <section class="card">
+        <header class="card-header">
+          <h4>Welcome, {{ session['user']['name'] }} <i class="fas fa-user-graduate text-primary"></i></h4>
+        </header>
+        <div class="card-body welcome-section">
+          <nav class="action-button-group">
+            <a href="{{ url_for('apply_leave') }}" class="btn btn-primary"><i class="fas fa-file-alt"></i> Apply for Leave</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </nav>
+        </div>
+      </section>
+
+      <!-- Leave Status Card -->
+      <section class="card">
+        <header class="card-header">
+          <h4>Leave Status</h4>
+        </header>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle mb-0" id="leave-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>QR Code</th>
+                  <th>Download</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if leaves %}
+                  {% for l in leaves %}
+                  <tr class="{% if l['status'] == 'Pending' %}status-pending{% elif l['status'] == 'Approved' %}status-approved{% else %}status-rejected{% endif %}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ l['start_date'] }}</td>
+                    <td>{{ l['end_date'] }}</td>
+                    <td>{{ l['reason'] }}</td>
+                    <td><span class="status-badge">{{ l['status'] }}</span></td>
+                    <td>{% if l['qr_code'] %}<img src="data:image/png;base64,{{ l['qr_code'] }}" class="qr-code-img" />{% else %}-{% endif %}</td>
+                    <td><a href="{{ url_for('download_leave_letter', leave_id=l['id']) }}" class="btn btn-sm btn-success"><i class="fas fa-download"></i> PDF</a></td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="7" class="text-muted py-4">No leave applications found.</td></tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leave History Pie Chart -->
+      <section class="card chart-card">
+        <header class="card-header">
+          <h4>Leave History Pie Chart</h4>
+        </header>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="leavePieChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Monthly Leave Trend Line Chart -->
+      <section class="card chart-card">
+        <header class="card-header">
+          <h4>Monthly Leave Trend</h4>
+        </header>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="monthlyTrendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEW: Leave Pattern by Day of Week Heatmap -->
+      <section class="card chart-card">
+        <header class="card-header">
+          <h4>Leave Pattern by Day of Week</h4>
+        </header>
+        <div class="card-body">
+          <p class="heatmap-title">Click on a day to see your leave frequency</p>
+          <div class="heatmap-container">
+            {% set days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
+            {% for i in range(7) %}
+              {% set count = day_counts[i] | default(0) %}
+              <div class="heatmap-cell" data-day="{{ i }}">
+                {{ count }}
+                <div class="heatmap-cell-tooltip">
+                  {{ days[i] }}: {{ count }} leave{{ '' if count == 1 else 's' }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="heatmap-labels">
+            {% for day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
+              <div>{{ day }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <p class="mb-0">&copy; 2025 SREC Leave Management System</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js        "></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js      "></script>
+
+  <script>
+    // Data from Flask context (passed via Jinja2)
+    const pieData = {
+      labels: ['Approved', 'Rejected', 'Pending'],
+      datasets: [{
+        data: [
+          {{ approved_count | default(0) }},
+          {{ rejected_count | default(0) }},
+          {{ pending_count | default(0) }}
+        ],
+        backgroundColor: [
+          '#2ecc71',
+          '#e74c3c',
+          '#f39c12'
+        ],
+        borderColor: [
+          '#27ae60',
+          '#c0392b',
+          '#d35400'
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    const lineData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'Leaves Applied',
+        data: [
+          {{ jan_leaves | default(0) }},
+          {{ feb_leaves | default(0) }},
+          {{ mar_leaves | default(0) }},
+          {{ apr_leaves | default(0) }},
+          {{ may_leaves | default(0) }},
+          {{ jun_leaves | default(0) }},
+          {{ jul_leaves | default(0) }},
+          {{ aug_leaves | default(0) }},
+          {{ sep_leaves | default(0) }},
+          {{ oct_leaves | default(0) }},
+          {{ nov_leaves | default(0) }},
+          {{ dec_leaves | default(0) }}
+        ],
+        borderColor: '#1e3c72',
+        backgroundColor: 'rgba(30, 60, 114, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.3
+      }]
+    };
+
+    // Initialize Pie Chart
+    const pieCtx = document.getElementById('leavePieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'pie',
+      data: pieData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font: { size: 14 },
+              padding: 15
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label}: ${context.raw}`;
+              }
+            }
+          }
+        },
+        animation: {
+          duration: 1500,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+
+    // Initialize Line Chart
+    const lineCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    new Chart(lineCtx, {
+      type: 'line',
+      data: lineData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              font: { size: 12 },
+              color: '#555'
+            },
+            grid: {
+              color: 'rgba(0,0,0,0.05)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 12 },
+              color: '#555'
+            },
+            grid: {
+              display: false
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: { size: 14 }
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.raw}`;
+              }
+            }
+          }
+        },
+        animation: {
+          duration: 1500,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+  </script>
+</body>
+</html>

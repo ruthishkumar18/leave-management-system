@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SREC - Tutor Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css                 " rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="           https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css                 " rel="stylesheet" />
+  <style>
+    :root {
+      --srec-blue: #003366;
+      --srec-green: #28a745;
+      --srec-red: #dc3545;
+      --srec-info: #17a2b8;
+      --off-white: #f8f9fa;
+      --text-dark: #343a40;
+      --text-muted: #6c757d;
+      --bg-white: #ffffff;
+      --border-radius: 1rem;
+      --shadow-light: rgba(0, 0, 0, 0.05);
+      --shadow-medium: rgba(0, 0, 0, 0.12);
+      --font-family: 'Poppins', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--off-white);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    a:focus, button:focus {
+      outline: 3px solid var(--srec-green);
+      outline-offset: 2px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--srec-blue);
+      box-shadow: 0 4px 10px rgba(0, 51, 102, 0.25);
+      user-select: none;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: white;
+      user-select: text;
+    }
+    .navbar-brand:hover, .navbar-brand:focus {
+      color: var(--srec-green);
+      text-decoration: none;
+    }
+
+    .d-flex.align-items-center > a.btn-outline-light {
+      font-weight: 600;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    .d-flex.align-items-center > a.btn-outline-light:hover,
+    .d-flex.align-items-center > a.btn-outline-light:focus {
+      background-color: var(--srec-green);
+      color: white;
+      outline: none;
+      text-decoration: none;
+    }
+
+    /* Notification Bell */
+    .notification-bell {
+      position: relative;
+      font-size: 1.25rem;
+      color: white;
+    }
+    .notification-count {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: var(--srec-red);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2.5rem 1rem;
+      max-width: 1140px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--bg-white);
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 30px var(--shadow-light);
+      margin-bottom: 2rem;
+      padding: 2.5rem 2rem;
+      user-select: none;
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover, .card:focus-within {
+      box-shadow: 0 12px 40px var(--shadow-medium);
+    }
+    .card-header {
+      background-color: transparent;
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .card-header h4 {
+      font-weight: 700;
+      color: var(--srec-blue);
+      margin: 0;
+      font-size: 1.5rem;
+      user-select: text;
+    }
+
+    /* Welcome Section */
+    .welcome-section p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 0;
+      user-select: text;
+    }
+
+    /* Leave Applications Table */
+    .table-responsive { 
+      overflow-x: auto; 
+      max-width: 100%;
+      max-height: 400px; /* Fixed height for scroll */
+      overflow-y: auto; /* Enable vertical scroll */
+      border: 1px solid #dee2e6;
+      border-radius: 0.75rem;
+    }
+    
+    table.table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.95rem;
+      user-select: text;
+    }
+    .table thead th {
+      background-color: var(--srec-blue);
+      color: white;
+      border-color: #455a74;
+      font-weight: 600;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0.75rem 1rem;
+      user-select: none;
+      position: sticky; /* Keep header visible while scrolling */
+      top: 0;
+      z-index: 10;
+    }
+    .table-bordered {
+      border: 1px solid #dee2e6;
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    .table-bordered th, .table-bordered td {
+      border: 1px solid #dee2e6;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0.75rem 0.75rem;
+    }
+    .table-striped tbody tr:nth-of-type(odd) { background-color: #f9fafb; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.4em 0.9em;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      user-select: none;
+      min-width: 90px;
+    }
+    .status-pending .status-badge {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .status-approved .status-badge {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status-rejected .status-badge {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Action Buttons */
+    .d-flex.flex-column.flex-md-row.justify-content-center > a.btn {
+      font-weight: 600;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      user-select: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .btn-success {
+      background-color: var(--srec-green);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+    .btn-success:hover, .btn-success:focus {
+      background-color: #1e7e34;
+      box-shadow: 0 6px 18px rgba(30, 126, 52, 0.6);
+      transform: translateY(-2px);
+      outline: none;
+      text-decoration: none;
+    }
+    .btn-danger {
+      background-color: var(--srec-red);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+    .btn-danger:hover, .btn-danger:focus {
+      background-color: #a71d2a;
+      box-shadow: 0 6px 18px rgba(167, 29, 42, 0.6);
+      transform: translateY(-2px);
+      outline: none;
+      text-decoration: none;
+    }
+    .btn-info {
+      background-color: var(--srec-info);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+    }
+    .btn-info:hover, .btn-info:focus {
+      background-color: #117a8b;
+      box-shadow: 0 6px 18px rgba(17, 122, 139, 0.6);
+      transform: translateY(-2px);
+      outline: none;
+      text-decoration: none;
+    }
+    
+    /* NEW: Disabled button style */
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 991.98px) {
+      .d-flex.flex-column.flex-md-row.justify-content-center > a.btn {
+        flex: 1 1 45%;
+        max-width: 180px;
+      }
+    }
+    @media (max-width: 575.98px) {
+      .navbar .container-fluid { flex-wrap: wrap; gap: 0.75rem; }
+      .navbar-brand { flex: 1 1 100%; text-align: center; }
+      .d-flex.align-items-center { flex: 1 1 100%; justify-content: center !important; }
+      .d-flex.flex-column.flex-md-row.justify-content-center > a.btn {
+        flex: 1 1 100%; max-width: 100%;
+      }
+      .table thead th, .table-bordered th, .table-bordered td {
+        font-size: 0.85rem; padding: 0.5rem 0.5rem;
+      }
+    }
+
+    /* NEW: Attractive Sankey Simulation Chart Container */
+    .sankey-container {
+      height: 300px;
+      position: relative;
+      margin: 1.5rem auto;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 1rem 0;
+      background: linear-gradient(180deg, #f0f5ff, #e6f0ff);
+      border-radius: calc(var(--border-radius) - 0.25rem);
+      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.08);
+      border: 1px solid #e0e7ff;
+    }
+
+    .sankey-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 20%;
+      position: relative;
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .sankey-stage span {
+      margin-top: 0.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .sankey-bar {
+      width: 100%;
+      border-radius: 0.5rem 0.5rem 0 0;
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .sankey-bar:hover {
+      transform: scale(1.05);
+      z-index: 10;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .sankey-bar::before {
+      content: attr(data-value);
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c3e50;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.3rem;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 20;
+    }
+
+    .sankey-bar:hover::before {
+      opacity: 1;
+    }
+
+    /* Enhanced Colors with Gradient Animations — UPDATED TO DARK BLUE */
+    .stage-applied .sankey-bar {
+      background: linear-gradient(135deg, #003366, #003366 50%, #0055aa 100%);
+      animation-delay: 0s;
+    }
+
+    .stage-tutor-approved .sankey-bar {
+      background: linear-gradient(135deg, #0099cc, #0099cc 50%, #00b3e6 100%);
+      animation-delay: 1s;
+    }
+
+    .stage-ac-approved .sankey-bar {
+      background: linear-gradient(135deg, #0066cc, #0066cc 50%, #0088dd 100%);
+      animation-delay: 2s;
+    }
+
+    .stage-rejected .sankey-bar {
+      background: linear-gradient(135deg, #cc0000, #cc0000 50%, #ff3333 100%);
+      animation-delay: 3s;
+    }
+
+    /* Leaderboard Styles */
+    .leaderboard-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fafafa;
+      border-radius: calc(var(--border-radius) - 0.25rem);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .leaderboard-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .trophy-icon {
+      font-size: 1.8rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .trophy-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+    .trophy-2 { background: linear-gradient(135deg, #C0C0C0, #A9A9A9); }
+    .trophy-3 { background: linear-gradient(135deg, #CD7F32, #B87333); }
+
+    .leaderboard-info h5 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .leaderboard-info p {
+      margin: 0.2rem 0 0 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .leaderboard-toggle {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .leaderboard-toggle .btn {
+      margin: 0 0.5rem;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      border-radius: 0.5rem;
+    }
+
+    .leaderboard-toggle .btn.active {
+      background-color: var(--srec-blue);
+      color: white;
+      border-color: var(--srec-blue);
+    }
+
+    /* NEW: REAL-TIME FILTER SECTION */
+    .filter-section {
+      background: #f8f9fa;
+      border-radius: calc(var(--border-radius) - 0.25rem);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .filter-section h5 {
+      color: var(--srec-blue);
+      margin-bottom: 1rem;
+      font-weight: 600;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 0.5rem;
+    }
+
+    .filter-input-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-input-group input,
+    .filter-input-group select {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 0.75rem;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .filter-input-group input:focus,
+    .filter-input-group select:focus {
+      outline: none;
+      border-color: var(--srec-blue);
+      box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+    }
+
+    .filter-clear-btn {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      color: #6c757d;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      margin-top: 1rem;
+    }
+
+    .filter-clear-btn:hover {
+      background: #e9ecef;
+      color: #495057;
+    }
+
+    /* Hide empty rows during filtering */
+    .table-row-hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" tabindex="0">SREC - Tutor Dashboard</a>
+      <div class="d-flex align-items-center">
+        <!-- Notification Bell -->
+        <div class="dropdown me-3">
+          <a class="notification-bell" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" tabindex="0">
+            <i class="fas fa-bell" aria-hidden="true"></i>
+            {% if notifications and notifications|length > 0 %}
+              <span class="notification-count" aria-live="polite" aria-atomic="true">{{ notifications|length }}</span>
+            {% endif %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-label="Notifications list" role="list" tabindex="-1">
+            {% if notifications and notifications|length > 0 %}
+              {% for note in notifications %}
+                <li role="listitem">
+                  <a class="dropdown-item" href="#" tabindex="0">
+                    {{ note['message'] }}<br />
+                    <small class="text-muted">{{ note['created_at'] }}</small>
+                  </a>
+                </li>
+                {% if not loop.last %}<li><hr class="dropdown-divider" /></li>{% endif %}
+              {% endfor %}
+            {% else %}
+              <li><span class="dropdown-item-text text-muted">No notifications</span></li>
+            {% endif %}
+          </ul>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-light" aria-label="Logout" tabindex="0">
+          <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main" aria-label="Tutor dashboard main content">
+    <div class="container">
+
+      <section class="card" tabindex="0" aria-labelledby="welcome-title">
+        <header class="card-header">
+          <h4 id="welcome-title">Welcome, {{ session['user']['name'] }} <i class="fas fa-chalkboard-teacher text-primary" aria-hidden="true"></i></h4>
+        </header>
+        <div class="card-body welcome-section">
+          <p>Manage student leave applications for your department.</p>
+        </div>
+      </section>
+
+      <!-- NEW: Real-Time Filter Section -->
+      <section class="filter-section">
+        <h5><i class="fas fa-filter me-2"></i>Filter Leave Applications</h5>
+        <div class="filter-input-group">
+          <input type="text" id="filter-name" placeholder="Search by Student Name" class="form-control">
+          <input type="text" id="filter-roll" placeholder="Search by Roll Number" class="form-control">
+          <input type="date" id="filter-start-date" placeholder="Start Date" class="form-control">
+          <input type="date" id="filter-end-date" placeholder="End Date" class="form-control">
+        </div>
+        <button class="filter-clear-btn" id="clear-filters">Clear Filters</button>
+      </section>
+
+      <section class="card" tabindex="0" aria-labelledby="leave-applications-title">
+        <header class="card-header">
+          <h4 id="leave-applications-title">Leave Applications</h4>
+        </header>
+        <div class="card-body p-0">
+          <div class="table-responsive" role="region" aria-label="Leave applications table">
+            <table class="table table-bordered table-striped align-middle text-center mb-0" id="leave-table" role="table">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Student Name</th>
+                  <th scope="col">Roll No</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Reason</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if leaves %}
+                  {% for l in leaves %}
+                  <tr id="row-{{ l['id'] }}" class="{% if l['status'] == 'Pending' %}status-pending{% elif 'Approved' in l['status'] %}status-approved{% else %}status-rejected{% endif %}">
+                    <td>{{ l['id'] }}</td>
+                    <td>{{ l['student_name'] }}</td>
+                    <td>{{ l['roll'] }}</td>
+                    <td>{{ l['start_date'] }}</td>
+                    <td>{{ l['end_date'] }}</td>
+                    <td>{{ l['reason'] }}</td>
+                    <td><span class="status-badge status-{{ l['status'] | lower | replace(' ', '-') }}">{{ l['status'] }}</span></td>
+                    <td>
+                      <div class="d-flex flex-column flex-md-row justify-content-center" role="group" aria-label="Leave application actions for ID {{ l['id'] }}">
+                        {% if l['status'] == 'Pending' %}
+                          <a href="{{ url_for('update_leave', leave_id=l['id'], action='approve') }}" class="btn btn-success btn-sm me-md-2 mb-2 mb-md-0" aria-label="Approve leave ID {{ l['id'] }}">
+                              <i class="fas fa-check me-1" aria-hidden="true"></i> Approve
+                          </a>
+                          <a href="{{ url_for('update_leave', leave_id=l['id'], action='reject') }}" class="btn btn-danger btn-sm me-md-2 mb-2 mb-md-0" aria-label="Reject leave ID {{ l['id'] }}">
+                              <i class="fas fa-times me-1" aria-hidden="true"></i> Reject
+                          </a>
+                        {% else %}
+                          <button class="btn btn-secondary btn-sm me-md-2 mb-2 mb-md-0" disabled aria-label="No actions available for leave ID {{ l['id'] }}">
+                              <i class="fas fa-ban me-1" aria-hidden="true"></i> No Action
+                          </button>
+                        {% endif %}
+                        <a href="{{ url_for('download_leave_letter', leave_id=l['id']) }}" class="btn btn-info btn-sm" aria-label="Download PDF for leave ID {{ l['id'] }}">
+                            <i class="fas fa-download me-1" aria-hidden="true"></i> PDF
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="8" class="text-muted py-4" role="cell">No leave applications found.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEW: Monthly Approval Workflow (Sankey Diagram) -->
+      <section class="card chart-card" tabindex="0" aria-labelledby="sankey-title">
+        <header class="card-header">
+          <h4 id="sankey-title">Monthly Approval Workflow</h4>
+        </header>
+        <div class="card-body">
+          <p class="text-center text-muted mb-3">Flow of leave applications through approval stages</p>
+          <div class="sankey-container">
+            <!-- Applied -->
+            <div class="sankey-stage stage-applied">
+              <div class="sankey-bar" 
+                   data-value="{{ applied_count }}" 
+                   style="height: {{ (applied_count / max_flow * 100)|round(0) }}%;">
+              </div>
+              <span style="color: var(--srec-blue); font-weight: 700;">Applied</span>
+            </div>
+            <!-- Tutor Approved -->
+            <div class="sankey-stage stage-tutor-approved">
+              <div class="sankey-bar" 
+                   data-value="{{ tutor_approved_count }}" 
+                   style="height: {{ (tutor_approved_count / max_flow * 100)|round(0) }}%;">
+              </div>
+              <span style="color: var(--srec-blue); font-weight: 700;">Tutor Approved</span>
+            </div>
+            <!-- AC Approved -->
+            <div class="sankey-stage stage-ac-approved">
+              <div class="sankey-bar" 
+                   data-value="{{ ac_approved_count }}" 
+                   style="height: {{ (ac_approved_count / max_flow * 100)|round(0) }}%;">
+              </div>
+              <span style="color: var(--srec-blue); font-weight: 700;">AC Approved</span>
+            </div>
+            <!-- Rejected -->
+            <div class="sankey-stage stage-rejected">
+              <div class="sankey-bar" 
+                   data-value="{{ rejected_count }}" 
+                   style="height: {{ (rejected_count / max_flow * 100)|round(0) }}%;">
+              </div>
+              <span style="color: var(--srec-blue); font-weight: 700;">Rejected</span>
+            </div>
+          </div>
+          <p class="text-center mt-3 small" style="color: var(--srec-green);">
+            {% if max_flow > 0 %}
+              {{ approved_percent }}% of your approved leaves were accepted by AC — excellent workflow!
+            {% endif %}
+          </p>
+        </div>
+      </section>
+
+      <!-- NEW: Top 3 Students by Leave Frequency (Leaderboard) -->
+      <section class="card chart-card" tabindex="0" aria-labelledby="leaderboard-title">
+        <header class="card-header">
+          <h4 id="leaderboard-title">Top 3 Students by Leave Frequency</h4>
+        </header>
+        <div class="card-body">
+          <div class="leaderboard-toggle">
+            <button class="btn btn-outline-secondary active" data-target="applied">Most Applied</button>
+            <button class="btn btn-outline-secondary" data-target="approval">Highest Approval Rate</button>
+          </div>
+          <div class="leaderboard-container" id="leaderboard-content">
+            {% set students = top_students_applied %}
+            {% for student in students %}
+              {% set rank = loop.index0 + 1 %}
+              <div class="leaderboard-item">
+                <div class="trophy-icon trophy-{{ rank }}">
+                  {% if rank == 1 %}🥇{% elif rank == 2 %}🥈{% elif rank == 3 %}🥉{% endif %}
+                </div>
+                <div class="leaderboard-info">
+                  <h5>{{ student.name }}</h5>
+                  <p>Roll: {{ student.roll }} • Total Leaves: {{ student.count }}</p>
+                </div>
+              </div>
+            {% endfor %}
+            {% if students|length == 0 %}
+              <p class="text-muted text-center py-3">No leave data available yet.</p>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <p class="mb-0 text-center">&copy; 2025 SREC Leave Management System</p>
+  </footer>
+
+  <!-- ✅ NEW: Hidden JSON Script for Safe JS Data -->
+  <script id="leaderboard-data" type="application/json">
+    {{ top_students_applied | tojson }}
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js                 "></script>
+  <script>
+    // Handle approve/reject without page reload — FIXED VERSION
+    document.querySelectorAll('a.btn-success, a.btn-danger').forEach(button => {
+      button.addEventListener('click', async e => {
+        e.preventDefault();
+        const url = button.href;
+        const row = button.closest('tr');
+        const action = button.classList.contains('btn-success') ? 'approve' : 'reject';
+
+        try {
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data.success) {
+            const statusCell = row.querySelector('td .status-badge');
+            if(action === 'approve'){
+              statusCell.textContent = 'Tutor Approved';
+              statusCell.className = 'status-badge status-approved';
+              row.classList.remove('status-pending', 'status-rejected');
+              row.classList.add('status-approved');
+            } else {
+              statusCell.textContent = 'Rejected';
+              statusCell.className = 'status-badge status-rejected';
+              row.classList.remove('status-pending', 'status-approved');
+              row.classList.add('status-rejected');
+            }
+
+            // Replace action buttons with "No Action" button
+            const actionCell = row.querySelector('td:last-child .d-flex');
+            actionCell.innerHTML = `
+              <button class="btn btn-secondary btn-sm me-md-2 mb-2 mb-md-0" disabled aria-label="No actions available">
+                <i class="fas fa-ban me-1" aria-hidden="true"></i> No Action
+              </button>
+              <a href="${url.replace('/update_leave', '/download_leave_letter')}" class="btn btn-info btn-sm" aria-label="Download PDF">
+                <i class="fas fa-download me-1" aria-hidden="true"></i> PDF
+              </a>
+            `;
+
+            // Optional: Add subtle highlight effect
+            row.style.backgroundColor = '#e8f5e9';
+            setTimeout(() => row.style.backgroundColor = '', 1000);
+
+          } else {
+            alert("Failed to update leave: " + (data.message || "Unknown error"));
+          }
+
+        } catch (err) {
+          console.error("Fetch error:", err);
+          alert("Error updating leave: " + err.message);
+        }
+      });
+    });
+
+    // Toggle between Most Applied / Highest Approval Rate
+    document.querySelectorAll('.leaderboard-toggle .btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.leaderboard-toggle .btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const target = this.dataset.target;
+        const container = document.getElementById('leaderboard-content');
+        
+        // Clear existing content
+        container.innerHTML = '';
+
+        // ✅ FIXED: Safely parse JSON from hidden script tag
+        const students = JSON.parse(document.getElementById('leaderboard-data').textContent);
+        if (students.length === 0) {
+          container.innerHTML = '<p class="text-muted text-center py-3">No leave data available yet.</p>';
+          return;
+        }
+
+        students.forEach((student, idx) => {
+          const rank = idx + 1;
+          const emoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+          
+          const item = document.createElement('div');
+          item.className = 'leaderboard-item';
+          item.innerHTML = `
+            <div class="trophy-icon trophy-${rank}">${emoji}</div>
+            <div class="leaderboard-info">
+              <h5>${student.name}</h5>
+              <p>Roll: ${student.roll} • Total Leaves: ${student.count}</p>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      });
+    });
+
+    // ======================================================
+    // NEW: REAL-TIME FILTER LOGIC — NO CHANGES TO EXISTING CODE
+    // ======================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      const tableRows = Array.from(document.querySelectorAll('#leave-table tbody tr'));
+      const filters = {
+        name: document.getElementById('filter-name'),
+        roll: document.getElementById('filter-roll'),
+        startDate: document.getElementById('filter-start-date'),
+        endDate: document.getElementById('filter-end-date')
+      };
+      const clearBtn = document.getElementById('clear-filters');
+
+      function applyFilters() {
+        const nameVal = filters.name.value.toLowerCase().trim();
+        const rollVal = filters.roll.value.toLowerCase().trim();
+        const startVal = filters.startDate.value;
+        const endVal = filters.endDate.value;
+
+        tableRows.forEach(row => {
+          const nameCell = row.cells[1].textContent.toLowerCase();
+          const rollCell = row.cells[2].textContent.toLowerCase();
+          const startDateCell = row.cells[3].textContent;
+          const endDateCell = row.cells[4].textContent;
+
+          const matchesName = !nameVal || nameCell.includes(nameVal);
+          const matchesRoll = !rollVal || rollCell.includes(rollVal);
+          const matchesStartDate = !startVal || startDateCell >= startVal;
+          const matchesEndDate = !endVal || endDateCell <= endVal;
+
+          if (matchesName && matchesRoll && matchesStartDate && matchesEndDate) {
+            row.classList.remove('table-row-hidden');
+          } else {
+            row.classList.add('table-row-hidden');
+          }
+        });
+      }
+
+      // Attach event listeners
+      Object.values(filters).forEach(input => {
+        input.addEventListener('input', applyFilters);
+      });
+
+      clearBtn.addEventListener('click', () => {
+        Object.values(filters).forEach(input => {
+          input.value = '';
+        });
+        applyFilters();
+      });
+
+      // Initial apply
+      applyFilters();
+    });
+  </script>
+</body>
+</html> 

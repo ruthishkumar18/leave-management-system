@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SREC - Leave Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css        " rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="        https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css        " rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1A237E;
+            --secondary-color: #E8F5E9;
+            --accent-color: #28a745;
+            --danger-color: #D32F2F;
+            --warning-color: #FFB300;
+            --info-color: #1976D2;
+            --bg-color: #F5F5F5;
+            --text-dark: #212121;
+            --text-muted: #757575;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: rgba(0,0,0,0.08);
+            --shadow-medium: rgba(0,0,0,0.15);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(90deg, var(--primary-color), #303F9F);
+            color: white;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h2 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        .main-content {
+            flex: 1;
+            padding: 2rem 1rem;
+        }
+        .card {
+            border: none;
+            border-radius: 1.25rem;
+            background-color: var(--card-bg);
+            box-shadow: 0 8px 25px var(--shadow-light);
+            margin-bottom: 2rem;
+            padding: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px var(--shadow-medium);
+        }
+        .card-header {
+            background-color: transparent;
+            border-bottom: none;
+            margin-bottom: 1rem;
+        }
+        .card-header h4 {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.6rem;
+        }
+        .status-badge {
+            padding: 0.5em 1em;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+        .status-pending { background-color: var(--warning-color); color: #fff; }
+        .status-tutor-approved { background-color: var(--info-color); color: #fff; }
+        .status-approved { background-color: var(--accent-color); color: #fff; }
+        .status-rejected { background-color: var(--danger-color); color: #fff; }
+        .table th {
+            background: linear-gradient(90deg, var(--primary-color), #303F9F);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        .table-bordered th, .table-bordered td {
+            border-color: var(--border-color);
+            padding: 1rem;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0,0,0,0.03);
+        }
+        .action-button-group .btn {
+            font-weight: 500;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            padding: 0.55rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .action-button-group .btn:hover {
+            transform: translateY(-2px);
+        }
+        .action-button-group .btn .fas {
+            margin-right: 0.5rem;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            color: white;
+            font-size: 1.6rem;
+            transition: transform 0.2s;
+        }
+        .notification-bell:hover { transform: scale(1.15); }
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            padding: 3px 7px;
+            min-width: 22px;
+            text-align: center;
+        }
+        .dropdown-menu {
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 30px var(--shadow-medium);
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        /* NEW: Scrollable table container */
+        .table-responsive { 
+            overflow-x: auto; 
+            max-height: 400px; /* Fixed height for scroll */
+            overflow-y: auto; /* Enable vertical scroll */
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+        }
+        .table { margin-bottom: 0; }
+        .table thead th {
+            position: sticky; /* Keep header visible while scrolling */
+            top: 0;
+            z-index: 10;
+        }
+        footer {
+            background: linear-gradient(90deg, var(--primary-color), #303F9F);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -4px 10px var(--shadow-light);
+        }
+        .list-group-item {
+            border: none;
+            padding: 0.75rem 0;
+        }
+        @media (max-width: 992px) {
+            .card { padding: 1.5rem; }
+            .card-header h4 { font-size: 1.3rem; }
+            header h2 { font-size: 1.5rem; }
+        }
+        @media (max-width: 768px) {
+            header .container { flex-direction: column; gap: 1rem; }
+            .d-flex.align-items-center { justify-content: center; width: 100%; }
+            .action-button-group .btn { width: 100%; }
+            .table-responsive table { font-size: 0.8rem; }
+            .table-responsive th, .table-responsive td { padding: 0.75rem; }
+            .status-badge { padding: 0.4em 0.8em; }
+        }
+
+        /* NEW: Chart Container Styles */
+        .chart-container {
+            height: 320px;
+            position: relative;
+            margin: 1.5rem auto;
+            max-width: 900px;
+        }
+
+        .chart-card {
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Horizontal Bar Chart Specific */
+        .horizontal-bar-chart .chart-container {
+            height: 300px;
+            max-width: 100%;
+        }
+
+        /* Stacked Bar Chart Colors */
+        .stacked-bar-chart .chart-container {
+            height: 350px;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.3rem;
+            font-size: 0.8rem;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .chart-container:hover .chart-tooltip {
+            opacity: 1;
+        }
+
+        /* NEW: REAL-TIME FILTER SECTION */
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: calc(var(--border-radius) - 0.25rem);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .filter-section h5 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+
+        .filter-input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-input-group input,
+        .filter-input-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.75rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .filter-input-group input:focus,
+        .filter-input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+        }
+
+        .filter-clear-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            color: #6c757d;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            margin-top: 1rem;
+        }
+
+        .filter-clear-btn:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        /* Hide filtered-out rows */
+        .table-row-hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <h2>SREC - Leave Management</h2>
+        <div class="d-flex align-items-center">
+            <div class="dropdown me-3">
+                <span class="notification-bell" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    {% if notifications and notifications|length > 0 %}
+                        <span class="notification-count">{{ notifications|length }}</span>
+                    {% endif %}
+                </span>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown">
+                    {% if notifications and notifications|length > 0 %}
+                        {% for notif in notifications %}
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    {{ notif['message'] }}<br>
+                                    <small class="text-muted">{{ notif['created_at'] }}</small>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li><span class="dropdown-item-text text-muted">No new notifications</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-light">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="main-content">
+    <div class="container">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h4>Welcome, {{ ac['name'] }} <i class="fas fa-user-tie text-primary"></i></h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-0">Manage leave applications for the <strong>{{ ac['dept'] }}</strong> department.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>Tutors in Department</h4>
+            </div>
+            <div class="card-body">
+                {% if tutors %}
+                    <ul class="list-group list-group-flush">
+                        {% for tutor in tutors %}
+                            <li class="list-group-item">{{ tutor['name'] }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No tutors found in this department.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- NEW: REAL-TIME FILTER SECTION -->
+        <section class="filter-section">
+            <h5><i class="fas fa-filter me-2"></i>Filter Leave Applications</h5>
+            <div class="filter-input-group">
+                <input type="text" id="filter-student-name" placeholder="Search by Student Name" class="form-control">
+                <input type="text" id="filter-roll" placeholder="Search by Roll Number" class="form-control">
+                <input type="text" id="filter-tutor" placeholder="Search by Tutor Name" class="form-control">
+                <input type="date" id="filter-start-date" placeholder="Start Date" class="form-control">
+                <input type="date" id="filter-end-date" placeholder="End Date" class="form-control">
+            </div>
+            <button class="filter-clear-btn" id="clear-filters">Clear Filters</button>
+        </section>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>Leave Applications</h4>
+            </div>
+            <div class="card-body p-0">
+                {% if leaves %}
+                    <!-- ✅ FIXED: Added id="leave-table" HERE -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped text-center align-middle mb-0" id="leave-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student Name</th>
+                                    <th>Roll</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Reason</th>
+                                    <th>Tutor</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in leaves %}
+                                    <tr id="row-{{ leave['id'] }}">
+                                        <td>{{ leave['id'] }}</td>
+                                        <td>{{ leave['student_name'] }}</td>
+                                        <td>{{ leave['roll'] }}</td>
+                                        <td>{{ leave['start_date'] }}</td>
+                                        <td>{{ leave['end_date'] }}</td>
+                                        <td>{{ leave['reason'] }}</td>
+                                        <td>{{ leave['tutor'] }}</td>
+                                        <td>
+                                            <span class="status-badge
+                                                {% if leave['status'] == 'Pending' %}status-pending
+                                                {% elif leave['status'] == 'Tutor Approved' %}status-tutor-approved
+                                                {% elif leave['status'] == 'Approved by AC' %}status-approved
+                                                {% elif leave['status'] == 'Rejected by AC' %}status-rejected
+                                                {% endif %}">
+                                                {{ leave['status'] }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if leave['status'] == 'Tutor Approved' %}
+                                                <div class="action-button-group">
+                                                    <a href="{{ url_for('ac_update_leave', leave_id=leave['id'], action='approve') }}"
+                                                       class="btn btn-success btn-sm mb-1">
+                                                        <i class="fas fa-check"></i> Approve
+                                                    </a>
+                                                    <a href="{{ url_for('ac_update_leave', leave_id=leave['id'], action='reject') }}"
+                                                       class="btn btn-danger btn-sm mb-1">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">No Action</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No leave records available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- NEW: Tutor Comparison Chart (Bar Chart) -->
+        <section class="card chart-card">
+            <header class="card-header">
+                <h4 style="color: white;">Tutor Comparison: Approvals, Rejections & Pending</h4>
+            </header>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="tutorComparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: Top Students with Leaves (Horizontal Bar Chart) -->
+        <section class="card chart-card">
+            <header class="card-header">
+                <h4 style="color: white;">Top Students with Leaves</h4>
+            </header>
+            <div class="card-body">
+                <div class="chart-container horizontal-bar-chart">
+                    <canvas id="topStudentsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: Leave Approval Performance (Stacked Bar Chart) -->
+        <section class="card chart-card">
+            <header class="card-header">
+                <h4 style="color: white;">Leave Approval Performance: AC vs Tutor</h4>
+            </header>
+            <div class="card-body">
+                <div class="chart-container stacked-bar-chart">
+                    <canvas id="approvalPerformanceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<footer>
+    <p class="mb-0">&copy; 2025 SREC Leave Management System</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js        "></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js      "></script>
+
+<script>
+    // Handle approve/reject without page reload
+    document.querySelectorAll('a.btn-success, a.btn-danger').forEach(button => {
+        button.addEventListener('click', e => {
+            e.preventDefault();
+            const url = button.href;
+            const row = button.closest('tr');
+            const action = button.classList.contains('btn-success') ? 'approve' : 'reject';
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const statusCell = row.querySelector('td .status-badge');
+                        if (action === 'approve') {
+                            statusCell.textContent = 'Approved by AC';
+                            statusCell.className = 'status-badge status-approved';
+                        } else {
+                            statusCell.textContent = 'Rejected by AC';
+                            statusCell.className = 'status-badge status-rejected';
+                        }
+                        row.querySelector('td:last-child').innerHTML = '<span class="text-muted">No Action</span>';
+                    } else {
+                        console.error("Failed to update leave:", data.message);
+                        alert("Failed to update leave: " + (data.message || "Unknown error"));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error updating leave:", err);
+                    alert("Error updating leave: " + err);
+                });
+        });
+    });
+
+    // --- TUTOR COMPARISON CHART ---
+    const tutorLabels = {{ tutor_labels | safe }};
+    const tutorData = {
+        labels: tutorLabels,
+        datasets: [
+            {
+                label: 'Approved',
+                data: {{ tutor_approved | safe }},
+                backgroundColor: '#28a745',
+                borderColor: '#218838',
+                borderWidth: 1
+            },
+            {
+                label: 'Rejected',
+                data: {{ tutor_rejected | safe }},
+                backgroundColor: '#dc3545',
+                borderColor: '#c82333',
+                borderWidth: 1
+            },
+            {
+                label: 'Pending',
+                data: {{ tutor_pending | safe }},
+                backgroundColor: '#ffc107',
+                borderColor: '#e0a800',
+                borderWidth: 1
+            }
+        ]
+    };
+
+    const tutorConfig = {
+        type: 'bar',
+        data: tutorData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: { size: 12 },
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#555'
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#555'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
+    };
+
+    const tutorCtx = document.getElementById('tutorComparisonChart').getContext('2d');
+    new Chart(tutorCtx, tutorConfig);
+
+    // --- TOP STUDENTS CHART (HORIZONTAL BAR) ---
+    const studentLabels = {{ student_labels | safe }};
+    const studentData = {
+        labels: studentLabels,
+        datasets: [{
+            label: 'Total Leaves Applied',
+            data: {{ student_counts | safe }},
+            backgroundColor: '#1976D2',
+            borderColor: '#1565C0',
+            borderWidth: 1
+        }]
+    };
+
+    const studentConfig = {
+        type: 'bar',
+        data: studentData,
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#555'
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: { size: 12 },
+                        color: '#555'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart'
+            }
+        }
+    };
+
+    const studentCtx = document.getElementById('topStudentsChart').getContext('2d');
+    new Chart(studentCtx, studentConfig);
+
+    // --- APPROVAL PERFORMANCE CHART (STACKED BAR) ---
+    const performanceLabels = ['AC Decisions', 'Tutor Decisions'];
+    const performanceData = {
+        labels: performanceLabels,
+        datasets: [
+            {
+                label: 'Approved',
+                data: [{{ ac_approved_count | default(0) }}, {{ tutor_approved_count | default(0) }}],
+                backgroundColor: '#28a745',
+                stack: 'Stack 0'
+            },
+            {
+                label: 'Rejected',
+                data: [{{ ac_rejected_count | default(0) }}, {{ tutor_rejected_count | default(0) }}],
+                backgroundColor: '#dc3545',
+                stack: 'Stack 0'
+            },
+            {
+                label: 'Pending',
+                data: [{{ ac_pending_count | default(0) }}, {{ tutor_pending_count | default(0) }}],
+                backgroundColor: '#ffc107',
+                stack: 'Stack 0'
+            }
+        ]
+    };
+
+    const performanceConfig = {
+        type: 'bar',
+        data: performanceData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12 },
+                        padding: 12
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#555'
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 12 },
+                        color: '#555'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart'
+            }
+        }
+    };
+
+    const performanceCtx = document.getElementById('approvalPerformanceChart').getContext('2d');
+    new Chart(performanceCtx, performanceConfig);
+
+    // ======================================================
+    // NEW: REAL-TIME FILTER LOGIC — NO CHANGES TO EXISTING CODE
+    // ======================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const tableRows = Array.from(document.querySelectorAll('#leave-table tbody tr'));
+        const filters = {
+            studentName: document.getElementById('filter-student-name'),
+            roll: document.getElementById('filter-roll'),
+            tutor: document.getElementById('filter-tutor'),
+            startDate: document.getElementById('filter-start-date'),
+            endDate: document.getElementById('filter-end-date')
+        };
+        const clearBtn = document.getElementById('clear-filters');
+
+        function applyFilters() {
+            const studentNameVal = filters.studentName.value.toLowerCase().trim();
+            const rollVal = filters.roll.value.toLowerCase().trim();
+            const tutorVal = filters.tutor.value.toLowerCase().trim();
+            const startVal = filters.startDate.value;
+            const endVal = filters.endDate.value;
+
+            tableRows.forEach(row => {
+                const studentNameCell = row.cells[1].textContent.toLowerCase();
+                const rollCell = row.cells[2].textContent.toLowerCase();
+                const tutorCell = row.cells[6].textContent.toLowerCase();
+                const startDateCell = row.cells[3].textContent;
+                const endDateCell = row.cells[4].textContent;
+
+                const matchesStudentName = !studentNameVal || studentNameCell.includes(studentNameVal);
+                const matchesRoll = !rollVal || rollCell.includes(rollVal);
+                const matchesTutor = !tutorVal || tutorCell.includes(tutorVal);
+                const matchesStartDate = !startVal || startDateCell >= startVal;
+                const matchesEndDate = !endVal || endDateCell <= endVal;
+
+                if (matchesStudentName && matchesRoll && matchesTutor && matchesStartDate && matchesEndDate) {
+                    row.classList.remove('table-row-hidden');
+                } else {
+                    row.classList.add('table-row-hidden');
+                }
+            });
+        }
+
+        // Attach event listeners
+        Object.values(filters).forEach(input => {
+            input.addEventListener('input', applyFilters);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            Object.values(filters).forEach(input => {
+                input.value = '';
+            });
+            applyFilters();
+        });
+
+        // Initial apply
+        applyFilters();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Leave Letter</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 25mm;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif !important;
+      font-size: 12pt;
+      line-height: 1.6;
+      color: #000;
+      margin: 0;
+      padding: 0;
+      width: 210mm;
+      height: 297mm;
+      box-sizing: border-box;
+    }
+
+    .letter-container {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 20px;
+      border: 2px solid #000;
+      position: relative;
+    }
+
+    .header-image {
+      width: 100%;
+      height: auto;
+      max-height: 80px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 15pt auto;
+    }
+
+    .date-line {
+      text-align: right;
+      margin: 20pt 0;
+    }
+
+    .address-block {
+      margin-bottom: 20pt;
+      text-align: left;
+    }
+
+    .address-block p {
+      margin: 2pt 0;
+    }
+
+    .subject-line {
+      margin: 10pt 0;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .content {
+      text-align: justify;
+      margin: 15pt 0 30pt 0;
+    }
+
+    .thank-you {
+      text-align: center;
+      margin: 30pt 0 40pt 0;
+    }
+
+    .closing-and-signature {
+      text-align: right;
+      margin-top: 40pt;
+    }
+
+    .footer-text {
+      text-align: center;
+      font-size: 8pt;
+      color: #555;
+      margin-top: 10pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="letter-container">
+    <!-- Header Image -->
+    <img src="file:///C:/Users/ruthi/Downloads/ALL_WORKING_LMS/static/SREC_HEADER1.png" alt="SREC Header" class="header-image">
+
+    <!-- Date -->
+    <div class="date-line">
+      <p>Date: {{ current_date }}</p>
+      <p>Place: Coimbatore</p>
+    </div>
+
+    <!-- From Address -->
+    <div class="address-block">
+      <p><strong>From:</strong></p>
+      <p>{{ leave.student_name }}</p>
+      <p>{{ leave.roll }}</p>
+      <p>Department of {{ leave.dept }}</p>
+      <p>Sri Ramakrishna Engineering College</p>
+      <p>Coimbatore - 641022</p>
+    </div>
+
+    <!-- To Address -->
+    <div class="address-block">
+      <p><strong>To:</strong></p>
+      <p>The Head of the Department</p>
+      <p>Department of {{ leave.dept }}</p>
+      <p>Sri Ramakrishna Engineering College</p>
+      <p>Coimbatore - 641022</p>
+    </div>
+
+    <!-- Precompute lowercase reason -->
+    {% set r = leave.reason | lower %}
+
+    <!-- Subject Line with Category + Original Reason -->
+    <div class="subject-line">
+      {% if 'fever' in r or 'sick' in r or 'ill' in r or 'medical' in r or 'health' in r or 'hospital' in r or 'doctor' in r or 'injury' in r or 'surgery' in r or 'covid' in r or 'flu' in r or 'dengue' in r %}
+        <p><strong>Sub:</strong> Request for Medical Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'death' in r or 'funeral' in r or 'bereavement' in r or 'emergency' in r or 'accident' in r or 'critical' in r or 'passed away' in r %}
+        <p><strong>Sub:</strong> Request for Family Emergency Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'temple' in r or 'function' in r or 'ceremony' in r or 'wedding' in r or 'marriage' in r or 'ritual' in r or 'puja' in r or 'festival' in r or 'diwali' in r or 'eid' in r or 'christmas' in r %}
+        <p><strong>Sub:</strong> Request for Religious/Cultural Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'home' in r or 'personal' in r or 'vacation' in r or 'native' in r or 'visit' in r or 'passport' in r or 'bank' in r or 'documents' in r %}
+        <p><strong>Sub:</strong> Request for Personal Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'competition' in r or 'internship' in r or 'seminar' in r or 'workshop' in r or 'placement' in r or 'interview' in r or 'sports' in r or 'ncc' in r or 'nss' in r or 'exam' in r %}
+        <p><strong>Sub:</strong> Request for Academic/Official Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'bus' in r or 'train' in r or 'flight' in r or 'delay' in r or 'breakdown' in r or 'stranded' in r or 'flood' in r or 'strike' in r or 'weather' in r %}
+        <p><strong>Sub:</strong> Request for Leave due to Transportation Issue from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'stress' in r or 'anxiety' in r or 'depression' in r or 'burnout' in r or 'mental' in r or 'counseling' in r or 'therapy' in r %}
+        <p><strong>Sub:</strong> Request for Mental Health Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'court' in r or 'police' in r or 'voting' in r or 'legal' in r or 'affidavit' in r or 'government' in r %}
+        <p><strong>Sub:</strong> Request for Legal/Government Obligation Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% elif 'parents' in r or 'guardian' in r or 'ptm' in r or 'meeting' in r or 'college fest' in r or 'alumni' in r %}
+        <p><strong>Sub:</strong> Request for Parent/College Event Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% else %}
+        <p><strong>Sub:</strong> Request for Leave from {{ leave.start_date }} to {{ leave.end_date }} (Reason: {{ leave.reason }})</p>
+      {% endif %}
+    </div>
+
+    <!-- Body Content -->
+    <div class="content">
+      <p>Respected Sir/Madam,</p>
+
+      <p>
+        {% if 'fever' in r or 'sick' in r or 'ill' in r or 'medical' in r or 'health' in r or 'hospital' in r or 'doctor' in r or 'injury' in r or 'surgery' in r or 'covid' in r or 'flu' in r or 'dengue' in r %}
+          I am writing to formally request a <strong>medical leave</strong> from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> due to the following reason: <strong>{{ leave.reason }}</strong>.
+        {% elif 'death' in r or 'funeral' in r or 'bereavement' in r or 'emergency' in r or 'accident' in r or 'critical' in r or 'passed away' in r %}
+          I am writing to request a leave of absence from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> due to a family emergency. The reason is: <strong>{{ leave.reason }}</strong>.
+        {% elif 'temple' in r or 'function' in r or 'ceremony' in r or 'wedding' in r or 'marriage' in r or 'ritual' in r or 'puja' in r or 'festival' in r or 'diwali' in r or 'eid' in r or 'christmas' in r %}
+          I am writing to request a leave of absence from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> to attend an important religious or cultural function. Specifically: <strong>{{ leave.reason }}</strong>.
+        {% elif 'home' in r or 'personal' in r or 'vacation' in r or 'native' in r or 'visit' in r or 'passport' in r or 'bank' in r or 'documents' in r %}
+          I am writing to request a <strong>personal leave</strong> from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> due to personal/home commitments. The reason is: <strong>{{ leave.reason }}</strong>.
+        {% elif 'competition' in r or 'internship' in r or 'seminar' in r or 'workshop' in r or 'placement' in r or 'interview' in r or 'sports' in r or 'ncc' in r or 'nss' in r or 'exam' in r %}
+          I am writing to request a leave of absence from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> for an academic or official purpose. Reason: <strong>{{ leave.reason }}</strong>.
+        {% elif 'bus' in r or 'train' in r or 'flight' in r or 'delay' in r or 'breakdown' in r or 'stranded' in r or 'flood' in r or 'strike' in r or 'weather' in r %}
+          I am unable to attend college from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> due to transportation or logistical issues. Details: <strong>{{ leave.reason }}</strong>.
+        {% elif 'stress' in r or 'anxiety' in r or 'depression' in r or 'burnout' in r or 'mental' in r or 'counseling' in r or 'therapy' in r %}
+          I am requesting a <strong>mental health leave</strong> from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> to address personal well-being. Reason: <strong>{{ leave.reason }}</strong>.
+        {% elif 'court' in r or 'police' in r or 'voting' in r or 'legal' in r or 'affidavit' in r or 'government' in r %}
+          I am required to fulfill a legal or government obligation from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong>. Reason: <strong>{{ leave.reason }}</strong>.
+        {% elif 'parents' in r or 'guardian' in r or 'ptm' in r or 'meeting' in r or 'college fest' in r or 'alumni' in r %}
+          I am requesting leave to attend a parent-teacher meeting or college event from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong>. Reason: <strong>{{ leave.reason }}</strong>.
+        {% else %}
+          I am writing to formally request a leave of absence from <strong>{{ leave.start_date }}</strong> to <strong>{{ leave.end_date }}</strong> due to the following reason: <strong>{{ leave.reason }}</strong>.
+        {% endif %}
+        I assure you that I will complete all pending academic responsibilities promptly upon my return. I kindly request your understanding and approval for this leave.
+      </p>
+    </div>
+
+    <!-- Thank You -->
+    <div class="thank-you">
+      <p>Thank you for considering my request.</p>
+    </div>
+
+    <!-- Closing + Name (no signature line) -->
+    <div class="closing-and-signature">
+      <p>Yours sincerely,</p>
+      <p>{{ leave.student_name }}</p>
+    </div>
+
+    <br><br><br>
+
+    <!-- Footer -->
+    <div class="footer-text">
+      This is a computer-generated document. Official use only.
+    </div>
+  </div>
+</body>
+</html>
